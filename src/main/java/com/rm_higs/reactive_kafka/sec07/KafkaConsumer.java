@@ -28,10 +28,10 @@ public class KafkaConsumer {
 //										 collection.forEach(record -> record.seek(record.position()-2));
 			                             partitions.stream()
 			                                       .filter(partition -> partition.topicPartition()
-			                                                               .partition() == 2)
+			                                                                     .partition() == 2)
 			                                       .findFirst()
 			                                       .ifPresent(partition -> partition.seek(partition.position() - 10));
-										 // Other options are partition.seekToBeginning()
+			                             // Other options are partition.seekToBeginning()
 			                             //                   partition.seekToEnd()
 			                             //                   partition.seekTimestamp()
 		                             })
