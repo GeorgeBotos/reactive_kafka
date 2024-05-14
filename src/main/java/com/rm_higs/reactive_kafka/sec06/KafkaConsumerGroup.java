@@ -1,4 +1,4 @@
-package com.rm_higs.reactive_kafka.sec6;
+package com.rm_higs.reactive_kafka.sec06;
 
 public class KafkaConsumerGroup {
 

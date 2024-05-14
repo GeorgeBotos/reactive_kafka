@@ -1,4 +1,4 @@
-package com.rm_higs.reactive_kafka.sec2;
+package com.rm_higs.reactive_kafka.sec05;
 
 import org.apache.kafka.clients.producer.ProducerConfig;
 import org.apache.kafka.clients.producer.ProducerRecord;
@@ -22,8 +22,8 @@ public class KafkaProducer {
 		                                            ProducerConfig.VALUE_SERIALIZER_CLASS_CONFIG, StringSerializer.class);
 
 		var options = SenderOptions.<String, String>create(producerConfig);
-		var inputFlux = Flux.interval(Duration.ofMillis(100))
-		                    .take(100)
+		var inputFlux = Flux.interval(Duration.ofMillis(5000))
+		                    .take(10_000)
 		                    .map(index -> new ProducerRecord<>("order-events",
 		                                                       index.toString(),
 		                                                       "order-" + index))

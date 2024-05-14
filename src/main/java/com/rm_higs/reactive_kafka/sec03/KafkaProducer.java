@@ -1,4 +1,4 @@
-package com.rm_higs.reactive_kafka.sec5;
+package com.rm_higs.reactive_kafka.sec03;
 
 import org.apache.kafka.clients.producer.ProducerConfig;
 import org.apache.kafka.clients.producer.ProducerRecord;
@@ -10,7 +10,6 @@ import reactor.kafka.sender.KafkaSender;
 import reactor.kafka.sender.SenderOptions;
 import reactor.kafka.sender.SenderRecord;
 
-import java.time.Duration;
 import java.util.Map;
 
 public class KafkaProducer {
@@ -21,18 +20,22 @@ public class KafkaProducer {
 		                                            ProducerConfig.KEY_SERIALIZER_CLASS_CONFIG, StringSerializer.class,
 		                                            ProducerConfig.VALUE_SERIALIZER_CLASS_CONFIG, StringSerializer.class);
 
-		var options = SenderOptions.<String, String>create(producerConfig);
-		var inputFlux = Flux.interval(Duration.ofMillis(5000))
-		                    .take(10_000)
+		var options = SenderOptions.<String, String>create(producerConfig)
+		                           .maxInFlight(10_000);
+		var inputFlux = Flux.range(1, 1_000_000)
 		                    .map(index -> new ProducerRecord<>("order-events",
 		                                                       index.toString(),
 		                                                       "order-" + index))
 		                    .map(producerRecord -> SenderRecord.create(producerRecord, producerRecord.key()));
-
+		var start = System.currentTimeMillis();
 		var sender = KafkaSender.create(options);
 		sender.send(inputFlux)
 		      .doOnNext(result -> log.info("correlation id: {}", result.correlationMetadata()))
-		      .doOnComplete(sender::close)
+		      .doOnComplete(() -> {
+				  log.info("Total time taken: {}ms", (System.currentTimeMillis()-start));
+				  sender.close();
+			  })
 		      .subscribe();
+
 	}
 }

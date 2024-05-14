@@ -1,8 +1,7 @@
-package com.rm_higs.reactive_kafka.sec4;
+package com.rm_higs.reactive_kafka.sec02;
 
 import org.apache.kafka.clients.producer.ProducerConfig;
 import org.apache.kafka.clients.producer.ProducerRecord;
-import org.apache.kafka.common.header.internals.RecordHeaders;
 import org.apache.kafka.common.serialization.StringSerializer;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -11,6 +10,7 @@ import reactor.kafka.sender.KafkaSender;
 import reactor.kafka.sender.SenderOptions;
 import reactor.kafka.sender.SenderRecord;
 
+import java.time.Duration;
 import java.util.Map;
 
 public class KafkaProducer {
@@ -22,26 +22,17 @@ public class KafkaProducer {
 		                                            ProducerConfig.VALUE_SERIALIZER_CLASS_CONFIG, StringSerializer.class);
 
 		var options = SenderOptions.<String, String>create(producerConfig);
-		var inputFlux = Flux.range(1, 10)
-		                    .map(KafkaProducer::createSenderRecord);
+		var inputFlux = Flux.interval(Duration.ofMillis(100))
+		                    .take(100)
+		                    .map(index -> new ProducerRecord<>("order-events",
+		                                                       index.toString(),
+		                                                       "order-" + index))
+		                    .map(producerRecord -> SenderRecord.create(producerRecord, producerRecord.key()));
 
 		var sender = KafkaSender.create(options);
 		sender.send(inputFlux)
 		      .doOnNext(result -> log.info("correlation id: {}", result.correlationMetadata()))
 		      .doOnComplete(sender::close)
 		      .subscribe();
-
-	}
-
-	private static SenderRecord<String, String, String> createSenderRecord(Integer index) {
-		var headers = new RecordHeaders();
-		headers.add("client-id", "some-client".getBytes());
-		headers.add("tracing-id", "123".getBytes());
-		var producer = new ProducerRecord<>("order-events",
-											null,
-		                                    index.toString(),
-		                                    "order-" + index,
-		                                    headers);
-		return SenderRecord.create(producer, producer.key());
 	}
 }

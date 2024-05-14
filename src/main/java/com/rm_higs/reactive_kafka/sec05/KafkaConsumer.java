@@ -1,7 +1,6 @@
-package com.rm_higs.reactive_kafka.sec6;
+package com.rm_higs.reactive_kafka.sec05;
 
 import org.apache.kafka.clients.consumer.ConsumerConfig;
-import org.apache.kafka.clients.consumer.CooperativeStickyAssignor;
 import org.apache.kafka.common.serialization.StringDeserializer;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -17,15 +16,12 @@ public class KafkaConsumer {
 
 	public static void start(String instanceId) {
 
-		// The default Partition Assignment Strategy is RangeAssignor
 		var consumerConfig = Map.<String, Object>of(ConsumerConfig.BOOTSTRAP_SERVERS_CONFIG, "localhost:9092",
 		                                            ConsumerConfig.KEY_DESERIALIZER_CLASS_CONFIG, StringDeserializer.class,
 		                                            ConsumerConfig.VALUE_DESERIALIZER_CLASS_CONFIG, StringDeserializer.class,
-		                                            ConsumerConfig.AUTO_OFFSET_RESET_CONFIG, "earliest",
-		                                            ConsumerConfig.GROUP_INSTANCE_ID_CONFIG, instanceId,
-		                                            ConsumerConfig.GROUP_ID_CONFIG, "demo-group-123",
-		                                            ConsumerConfig.PARTITION_ASSIGNMENT_STRATEGY_CONFIG, CooperativeStickyAssignor.class.getName());
-
+													ConsumerConfig.AUTO_OFFSET_RESET_CONFIG, "earliest",
+													ConsumerConfig.GROUP_INSTANCE_ID_CONFIG, instanceId,
+		                                            ConsumerConfig.GROUP_ID_CONFIG, "demo-group-123");
 		var options = ReceiverOptions.create(consumerConfig)
 		                             .subscription(List.of("order-events"));
 		KafkaReceiver.create(options)

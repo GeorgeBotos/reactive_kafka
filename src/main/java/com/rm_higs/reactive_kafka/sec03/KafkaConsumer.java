@@ -1,4 +1,4 @@
-package com.rm_higs.reactive_kafka.sec3;
+package com.rm_higs.reactive_kafka.sec03;
 
 import org.apache.kafka.clients.consumer.ConsumerConfig;
 import org.apache.kafka.common.serialization.StringDeserializer;
