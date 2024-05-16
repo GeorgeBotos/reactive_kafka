@@ -12,9 +12,9 @@ import java.time.Duration;
 import java.util.List;
 import java.util.Map;
 
-public class KafkaConsumer {
+public class KafkaConsumerV1 {
 
-	private static final Logger log = LoggerFactory.getLogger(KafkaConsumer.class);
+	private static final Logger log = LoggerFactory.getLogger(KafkaConsumerV1.class);
 
 	public static void main(String[] args) {
 
